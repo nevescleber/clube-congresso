@@ -71,6 +71,7 @@ const testimonialsSwiper = new Swiper(".testimonials-swiper", {
 document.addEventListener('DOMContentLoaded', function() {
     // Aguardar o carregamento completo do Fancybox
     if (typeof Fancybox !== 'undefined') {
+        // Configuração para galeria de imagens
         Fancybox.bind('[data-fancybox="gallery"]', {
             // Configurações da galeria
             groupAll: true,
@@ -126,8 +127,95 @@ document.addEventListener('DOMContentLoaded', function() {
                 ArrowLeft: "prev",
             },
         });
+
+        // Configuração para modais institucionais (HTML inline)
+        Fancybox.bind('[data-fancybox]:not([data-fancybox="gallery"])', {
+            // Tipo de conteúdo
+            type: 'inline',
+            
+            // IMPORTANTE: Clonar o conteúdo para não mover o elemento original
+            // Isso evita que o botão quebre ao fechar a modal
+            Html: {
+                // Clonar ao invés de mover
+                clone: true,
+            },
+            
+            // Toolbar simples para modais
+            Toolbar: {
+                display: {
+                    left: [],
+                    middle: [],
+                    right: ["close"],
+                },
+            },
+            
+            // Animações mais rápidas
+            showClass: "fancybox-fadeIn",
+            hideClass: "fancybox-fadeOut",
+            animated: true,
+            
+            // Reduzir delay ao fechar
+            hideDelay: 0,
+            
+            // Interface
+            hideScrollbar: true,
+            autoFocus: true,
+            trapFocus: true,
+            placeFocusBack: true,
+            
+            // Tamanho
+            width: '100%',
+            maxWidth: 650,
+            
+            // Callback para ajustar modal específica
+            on: {
+                done: (fancybox, slide) => {
+                    console.log('Modal aberta:', slide.src);
+                    
+                    // Ajustar largura para modal de associação
+                    if (slide.src === '#modal-associese') {
+                        const modalContainer = document.querySelector('.fancybox__content');
+                        if (modalContainer) {
+                            modalContainer.style.maxWidth = '800px';
+                        }
+                    }
+                },
+            },
+            
+            // Navegação por teclado
+            keyboard: {
+                Escape: "close",
+                Delete: "close",
+                Backspace: "close",
+            },
+            
+            // Callback adicional
+            on: {
+                destroy: (fancybox) => {
+                    console.log('Modal fechada e destruída');
+                },
+            },
+        });
+
+        console.log('Fancybox inicializado com sucesso');
+        
+        // Debug: verificar se os botões existem
+        const institutionalButtons = document.querySelectorAll('.institutional-btn[data-fancybox]');
+        console.log('Botões institucionais encontrados:', institutionalButtons.length);
+        
+        // Debug: verificar se as modais existem
+        const modals = document.querySelectorAll('[id^="modal-"]');
+        console.log('Modais encontradas:', modals.length);
+        
+        // Adicionar evento de clique manual como fallback
+        institutionalButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                console.log('Botão clicado:', this.getAttribute('data-src'));
+            });
+        });
     } else {
         console.error('Fancybox não foi carregado corretamente');
+        console.log('window.Fancybox:', typeof window.Fancybox);
     }
 });
 
